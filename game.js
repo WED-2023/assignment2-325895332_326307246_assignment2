@@ -96,7 +96,6 @@ function startGame(settings){
   score=0; lives=3; speedUps=0;
   vx=50*(Math.random()<.5?-1:1); vy=vx; enemyBulletSpeed=200; gameStartTime=Date.now();
 
-  /* נקודת-התחלה אקראית ומאוחסנת */
   const startX = Math.random()*(canvas.width-SHIP_SIZE);
   const startY = canvas.height - SHIP_SIZE;
 
