@@ -1,156 +1,169 @@
-// main.js
-
+/* ---------- main.js ---------- */
 document.addEventListener('DOMContentLoaded', () => {
-  const screens     = document.querySelectorAll('.screen');
-  const users       = JSON.parse(localStorage.getItem('users') || '{}');
-  const navWelcome  = document.getElementById('navWelcome');
-  const navRegister = document.getElementById('navRegister');
-  const navLogin    = document.getElementById('navLogin');
-  const navLogout   = document.getElementById('navLogout');
-  const configNav   = document.getElementById('configNav');
-  let   currentUser = null;
+  /* ===== DOM handles ===== */
+  const screens = document.querySelectorAll('.screen');
+  const users   = JSON.parse(localStorage.getItem('users') || '{}');
 
-  // keep last settings for restart
-  window.lastSettings = null;
+  const nav = {
+    welcome : navWelcome,
+    register: navRegister,
+    login   : navLogin,
+    logout  : navLogout,
+    config  : configNav
+  };
 
-  function showScreen(id) {
-    // Stop music if leaving game screen
-    if (id !== 'game' && typeof stopGameMusic === 'function') {
-      stopGameMusic();
-    }
-    
+  /* ===== state ===== */
+  let capturedKey   = ' ';      // default Space
+  let waitingForKey = false;
+  window.lastSettings = null;   // last game config
+
+  /* ===== helpers ===== */
+  const labelForKey = k => (k === ' ' ? 'Space' : k.toUpperCase());
+
+  const showScreen = id => {
+    if (id !== 'game' && typeof window.pauseGame === 'function') window.pauseGame();
     screens.forEach(s => s.classList.toggle('active', s.id === id));
-    document.getElementById('highscores').classList.add('hidden');
-  }
+    highscores.classList.add('hidden');
+  };
 
-  // initial nav state
-  navWelcome.style.display  = '';
-  navRegister.style.display = '';
-  navLogin.style.display    = '';
-  navLogout.style.display   = 'none';
-  configNav.style.display   = 'none';
+  const setNav = logged => {
+    nav.welcome.style.display  = logged ? 'none' : '';
+    nav.register.style.display = logged ? 'none' : '';
+    nav.login.style.display    = logged ? 'none' : '';
+    nav.logout.style.display   = logged ? ''     : 'none';
+    nav.config.style.display   = logged ? 'inline-block' : 'none';
+  };
 
-  // nav link handlers
-  document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      const tgt = link.dataset.target;
-      if (tgt) showScreen(tgt);
-    });
+  /* ===== nav links to screens ===== */
+  document.querySelectorAll('nav a[data-target]').forEach(a =>
+    a.addEventListener('click', e => { e.preventDefault(); showScreen(a.dataset.target); })
+  );
+
+  btnToRegister.onclick = () => showScreen('register');
+  btnToLogin   .onclick = () => showScreen('login');
+
+  /* ===== registration ===== */
+  registerForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const u = regUsername.value.trim(), p = regPassword.value, c = regConfirm.value;
+    registerError.textContent = '';
+
+    if (p !== c) { registerError.textContent='Passwords do match'; return; }
+    if (!/[A-Za-z]/.test(p) || !/\d/.test(p) || p.length < 8) {
+      registerError.textContent='Weak password (min 8, letters+digits)'; return;
+    }
+    if (users[u]) { registerError.textContent='Username exists'; return; }
+
+    users[u] = {
+      password:p,
+      first:firstName.value.trim(),
+      last:lastName.value.trim(),
+      email:email.value.trim(),
+      birth:birthdate.value
+    };
+    localStorage.setItem('users', JSON.stringify(users));
+    alert('Registered! Please log in.');
+    showScreen('login');
   });
 
-  // Welcome buttons
-  document.getElementById('btnToRegister')
-    .addEventListener('click', () => showScreen('register'));
-  document.getElementById('btnToLogin')
-    .addEventListener('click', () => showScreen('login'));
+  /* ===== login ===== */
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const u = loginUsername.value.trim(), p = loginPassword.value;
+    loginError.textContent = '';
 
-  // Registration
-  document.getElementById('registerForm')
-    .addEventListener('submit', e => {
+    const ok = (users[u] && users[u].password === p) || (u === 'p' && p === 'testuser');
+    if (!ok) { loginError.textContent='Invalid credentials'; return; }
+
+    sessionStorage.setItem('currentUser', u);
+    sessionStorage.setItem(`sessionScores_${u}`, JSON.stringify([]));
+    setNav(true); showScreen('config');
+  });
+
+  /* ===== logout ===== */
+  logoutBtn.onclick = e => {
+    e.preventDefault();
+    sessionStorage.removeItem('currentUser');
+    setNav(false); showScreen('welcome');
+  };
+
+  /* ===== fire-key picker ===== */
+  const fireKeyBtn = document.getElementById('fireKeyBtn');
+  fireKeyBtn.addEventListener('click', () => {
+    if (waitingForKey) return;
+    waitingForKey = true;
+    fireKeyBtn.textContent = 'Press any key…';
+
+    const once = e => {
       e.preventDefault();
-      const u   = document.getElementById('regUsername').value.trim();
-      const p   = document.getElementById('regPassword').value;
-      const c   = document.getElementById('regConfirm').value;
-      const err = document.getElementById('registerError');
-      err.textContent = '';
+      capturedKey = e.key;
+      fireKeyBtn.textContent = labelForKey(capturedKey);
+      waitingForKey = false;
+      window.removeEventListener('keydown', once);
+    };
+    window.addEventListener('keydown', once);
+  });
 
-      if (p !== c) {
-        err.textContent = 'Passwords do not match.'; return;
-      }
-      if (!/[A-Za-z]/.test(p) || !/\d/.test(p) || p.length < 8) {
-        err.textContent = 'Must be ≥8 chars, letters & digits.'; return;
-      }
-      if (users[u]) {
-        err.textContent = 'Username exists.'; return;
-      }
-
-      users[u] = {
-        password: p,
-        first:    document.getElementById('firstName').value.trim(),
-        last:     document.getElementById('lastName').value.trim(),
-        email:    document.getElementById('email').value.trim(),
-        birth:    document.getElementById('birthdate').value
-      };
-      localStorage.setItem('users', JSON.stringify(users));
-      alert('Registered! Please log in.');
-      showScreen('login');
-    });
-
-  // Login
-  document.getElementById('loginForm')
-    .addEventListener('submit', e => {
-      e.preventDefault();
-      const u   = document.getElementById('loginUsername').value.trim();
-      const p   = document.getElementById('loginPassword').value;
-      const err = document.getElementById('loginError');
-      err.textContent = '';
-
-      const okLocal = users[u] && users[u].password === p;
-      const okGuest = (u === 'p' && p === 'testuser');
-      if (!okLocal && !okGuest) {
-        err.textContent = 'Invalid credentials.'; return;
-      }
-
-      currentUser = u;
-      sessionStorage.setItem('currentUser', u);
-      sessionStorage.setItem(`sessionScores_${u}`, JSON.stringify([]));
-
-      navWelcome.style.display  = 'none';
-      navRegister.style.display = 'none';
-      navLogin.style.display    = 'none';
-      navLogout.style.display   = '';
-      configNav.style.display   = 'inline-block';
-
-      showScreen('config');
-    });
-
-  // Logout
-  document.getElementById('logoutBtn')
-    .addEventListener('click', e => {
-      e.preventDefault();
-      sessionStorage.removeItem('currentUser');
-
-      navWelcome.style.display  = '';
-      navRegister.style.display = '';
-      navLogin.style.display    = '';
-      navLogout.style.display   = 'none';
-      configNav.style.display   = 'none';
-
-      showScreen('welcome');
-    });
-
-  // Config → Start Game
-  document.getElementById('configForm').addEventListener('submit', e => {
+  /* ===== config → start game ===== */
+  configForm.addEventListener('submit', e => {
     e.preventDefault();
     const settings = {
-      fireKey: document.getElementById('fireKey').value,
-      time: parseInt(document.getElementById('gameTime').value, 10),
-      color: document.getElementById('shipColor').value,
-      musicVolume: parseFloat(document.getElementById('musicVolume').value),
-      musicEnabled: !document.getElementById('musicToggle').classList.contains('disabled')
+      fireKey      : capturedKey,
+      time         : +gameTime.value,
+      color        : shipColor.value,
+      musicVolume  : +musicVolume.value,
+      musicEnabled : !musicToggle.classList.contains('disabled')
     };
     localStorage.setItem('gameSettings', JSON.stringify(settings));
     window.lastSettings = settings;
-    showScreen('game');
-    startGame(settings);
+    showScreen('game'); startGame(settings);
   });
 
-  // New Game button in HUD
-  document.getElementById('newGameButton')
-    .addEventListener('click', () => {
-      document.getElementById('highscores').classList.add('hidden');
-      if (window.lastSettings) startGame(window.lastSettings);
-    });
+  /* ===== HUD new-game ===== */
+  newGameButton.onclick = () => {
+    highscores.classList.add('hidden');
+    if (window.lastSettings) startGame(window.lastSettings);
+  };
 
-  // start at Welcome
-  showScreen('welcome');
+  /* ===== music prefs init ===== */
+  const saved = JSON.parse(localStorage.getItem('gameSettings') || '{}');
+  if (saved.musicVolume !== undefined) musicVolume.value = saved.musicVolume;
+  if (saved.musicEnabled === false) musicToggle.classList.add('disabled');
 
-  const savedSettings = JSON.parse(localStorage.getItem('gameSettings')) || {};
-if (savedSettings.musicVolume !== undefined) {
-  document.getElementById('musicVolume').value = savedSettings.musicVolume;
-}
-if (savedSettings.musicEnabled === false) {
-  document.getElementById('musicToggle').classList.add('disabled');
-}
+  /* ===== modal ABOUT ===== */
+  const aboutModal = document.getElementById('aboutModal');
+  const openAbout  = document.getElementById('openAbout');
+  const aboutClose = document.getElementById('aboutClose');
+
+  openAbout.addEventListener('click', e=>{
+    e.preventDefault();
+    aboutModal.classList.remove('hidden');
+  });
+  aboutClose.addEventListener('click', () =>
+    aboutModal.classList.add('hidden') );
+
+  /* click outside closes */
+  aboutModal.addEventListener('click', e=>{
+    if (e.target === aboutModal) aboutModal.classList.add('hidden');
+  });
+
+  /* Esc closes */
+  window.addEventListener('keydown', e=>{
+    if (e.key === 'Escape' && !aboutModal.classList.contains('hidden')) {
+      aboutModal.classList.add('hidden');
+    }
+  });
+
+  /* ===== music controls events ===== */
+  musicToggle.addEventListener('click', () => window.toggleMusic && window.toggleMusic());
+  musicVolume.addEventListener('input', e => {
+    const vol = +e.target.value;
+    bgMusic.volume = vol;
+    const s = JSON.parse(localStorage.getItem('gameSettings') || '{}');
+    s.musicVolume = vol;
+    localStorage.setItem('gameSettings', JSON.stringify(s));
+  });
+
+  /* ===== first screen ===== */
+  setNav(false); showScreen('welcome');
 });
