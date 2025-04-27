@@ -2,3 +2,6 @@
 
 Shahar Navian - 325895332
 Shachaf Har Tsvi - 326307246
+
+link:
+https://wed-2023.github.io/assignment2-325895332_326307246_assignment2/
