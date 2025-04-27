@@ -15,10 +15,7 @@
   padding: 0;
 }
 
-
-html, body {
-  height: 100%;
-}
+html, body { height: 100%; }
 
 body {
   background: var(--bg);
@@ -26,7 +23,7 @@ body {
   font-family: 'Roboto', sans-serif;
 
   display: flex;
-  flex-direction: column; /* header | main (grow) | footer */
+  flex-direction: column;      /* header | main (grow) | footer */
 }
 
 /* ===== Header ===== */
@@ -39,29 +36,20 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  direction: ltr; 
+  direction: ltr;
 }
 
-header h1 {
-  font-size: 1.75rem;
-  margin: 0;
-}
-
-header img.header-logo {
-  height: 50px;
-  width: auto;
-}
+header h1 { font-size: 1.75rem; margin: 0; }
+header img.header-logo { height: 50px; width: auto; }
 
 /* ===== Nav ===== */
-nav {
-  background: var(--primary);
-}
+nav { background: var(--primary); }
 nav ul {
   display: flex;
   justify-content: center;
   list-style: none;
 }
-nav li + li { margin-left: 1rem; }
+nav li + li    { margin-left: 1rem; }
 nav a {
   color: var(--text);
   text-decoration: none;
@@ -75,7 +63,7 @@ nav a:hover {
 
 /* ===== Main & Screens ===== */
 main {
-  flex: 1 0 auto;           
+  flex: 1 0 auto;
   padding: 2rem;
   display: flex;
   justify-content: center;
@@ -130,7 +118,7 @@ button:hover { background: #ffd700; }
 /* ===== Canvas & HUD ===== */
 #gameCanvas {
   border: 2px solid var(--secondary);
-  background: black;
+  background: #000 url('wallpaper-SI.jpg') center / cover no-repeat; /* ← תמונת-רקע */
   margin-bottom: 1rem;
 }
 #hud {
