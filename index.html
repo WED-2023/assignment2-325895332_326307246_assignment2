@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space Invaders Game</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js" defer></script>
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <img src="si_logo.png" alt="Space Invaders Logo" class="header-logo">
+      <h1>Space Invaders</h1>
+    </div>
+  </header>
+
+  <audio id="playerHitSound" src="player_hit.wav"></audio>
+  <audio id="targetHitSound" src="target_hit.wav"></audio>
+  <audio id="cannonFireSound" src="cannon_fire.wav"></audio>
+  <audio id="bgMusic" preload="auto" loop>
+    <source src="spaceinvaders1.mpeg" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <nav>
+    <ul>
+      <li id="navWelcome"><a href="#" data-target="welcome">Welcome</a></li>
+      <li id="navRegister"><a href="#" data-target="register">Register</a></li>
+      <li id="navLogin"><a href="#" data-target="login">Login</a></li>
+      <li id="configNav" style="display:none"><a href="#" data-target="config">Config</a></li>
+      <li id="navLogout" style="display:none"><a href="#" id="logoutBtn">Logout</a></li>
+      <li id="navAbout"><a href="#" data-target="about">About</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="welcome" class="screen active">
+      <img src="si_logo.png" alt="Space Invaders Logo" class="welcome-logo">
+      <h2>Welcome to Space Invaders!</h2>
+      <p>Defend Earth from invading space aliens...</p>
+      <div class="welcome-buttons">
+        <button id="btnToRegister">Register</button>
+        <button id="btnToLogin">Login</button>
+      </div>
+    </section>
+
+    <section id="register" class="screen">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <input type="text" id="regUsername" placeholder="Username" required>
+        <input type="password" id="regPassword" placeholder="Password" required>
+        <input type="password" id="regConfirm"  placeholder="Confirm Password" required>
+        <input type="text"     id="firstName"   placeholder="First Name" required>
+        <input type="text"     id="lastName"    placeholder="Last Name" required>
+        <input type="email"    id="email"       placeholder="Email" required>
+        <input type="date"     id="birthdate"   required>
+        <button type="submit">Submit</button>
+      </form>
+      <div id="registerError" class="error"></div>
+    </section>
+
+    <section id="login" class="screen">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="text"     id="loginUsername" placeholder="Username" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <div id="loginError" class="error"></div>
+    </section>
+
+    <section id="about" class="screen">
+      <h2>About Space Invaders</h2>
+      <p>Battle against relentless waves of cosmic aliens in this arcade-style shooter! <br>Features include:</p>
+      <ul>
+        <li>Dynamic enemy patterns</li>
+        <li>Upgradable weapons</li>
+        <li>Score tracking</li>
+        <li>Progressive difficulty</li>
+      </ul>
+      <p>Developed for BGU Web Development Course using modern web technologies:</p>
+      <p>HTML5 + CSS + JavaScript + Canvas</p>
+    </section>
+
+    <section id="config" class="screen">
+      <h2>Configuration</h2>
+      <form id="configForm">
+        <label>Select Fire Key:
+          <select id="fireKey">
+            <option value=" ">Space</option>
+            <option value="A">A</option>
+            <option value="S">S</option>
+            <option value="D">D</option>
+            <option value="F">F</option>
+          </select>
+        </label>
+        <label>Game Time (minutes):
+          <input type="number" id="gameTime" value="2" min="2">
+        </label>
+        <label>Ship Color:
+          <input type="color" id="shipColor" value="#00ff00">
+        </label>
+        <button type="submit">Start Game</button>
+      </form>
+      <div class="music-controls">
+        <button id="musicToggle">Toggle Music</button>
+        <input type="range" id="musicVolume" min="0" max="1" step="0.1" value="0.3">
+      </div>
+    </section>
+
+    <section id="game" class="screen">
+      <canvas id="gameCanvas" width="800" height="600"></canvas>
+      <div id="hud">
+        <span id="score">Score: 0</span>
+        <span id="lives">Lives: 3</span>
+        <span id="timer">Time: 120</span>
+        <button id="newGameButton">New Game</button>
+      </div>
+      <div id="highscores" class="hidden"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Good luck!</p>
+  </footer>
+</body>
+</html>

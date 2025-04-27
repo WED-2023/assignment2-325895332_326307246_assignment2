@@ -1,0 +1,185 @@
+:root {
+  --primary:   #1e1f29;
+  --secondary: #ffcb05;
+  --accent:    #4fc3f7;
+  --bg:        #121217;
+  --text:      #ececec;
+}
+
+/* Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Header */
+header {
+  background: var(--primary);
+  padding: 1rem 2rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  direction: ltr; /* <-- VERY IMPORTANT */
+}
+
+header h1 {
+  font-size: 1.75rem;
+  margin: 0;
+}
+
+header img.header-logo {
+  height: 50px; /* or your preferred size */
+  width: auto;
+}
+
+/* Nav */
+nav { background: var(--primary); }
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+}
+nav li + li { margin-left: 1rem; }
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  transition: background 0.2s;
+}
+nav a:hover { background: var(--accent); border-radius: 4px; }
+
+/* Screens */
+main {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(30,31,41,0.9);
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.screen.active { display: flex; }
+
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+form input, form select {
+  padding: 0.5rem;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background: #1e1f29;
+  color: var(--text);
+  font-size: 1rem;
+}
+.error { color: #f44336; font-size: 0.9rem; }
+
+/* Buttons */
+button, input[type="submit"] {
+  background: var(--secondary);
+  color: var(--primary);
+  padding: 0.75rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover { background: #ffd700; }
+
+/* Canvas & HUD */
+#gameCanvas {
+  border: 2px solid var(--secondary);
+  background: black;
+  margin-bottom: 1rem;
+}
+#hud {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Highscores Overlay */
+.hidden {
+  display: none !important;
+}
+#highscores {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.hs-modal {
+  background: #222;
+  color: var(--text);
+  padding: 1.5rem;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  width: 300px;
+  position: relative;
+  text-align: center;
+}
+.hs-modal h3 { margin-top: 0; }
+.hs-modal ol {
+  text-align: left;
+  margin: 1rem 0;
+  padding-left: 1.2rem;
+}
+.hs-modal button {
+  margin: 0.5rem 0.25rem;
+}
+.hs-modal #closeHS {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+}
+
+/* Footer */
+footer {
+  background: var(--primary);
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+#musicToggle.disabled {
+  opacity: 0.6;
+  background-color: #555;
+}
+
+#musicToggle.disabled:hover {
+  background-color: #555;
+}
